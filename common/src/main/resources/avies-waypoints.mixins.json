@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "cc.avie.waypoints.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"HudMixin",
+		"LevelStorageAccessMixin",
+		"LocatorBarMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

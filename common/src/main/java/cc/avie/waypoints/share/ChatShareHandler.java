@@ -1,0 +1,122 @@
+package cc.avie.waypoints.share;
+
+import cc.avie.waypoints.config.WaypointsConfig;
+import cc.avie.waypoints.platform.Platform;
+import cc.avie.waypoints.waypoint.Waypoint;
+import cc.avie.waypoints.waypoint.WaypointColor;
+import cc.avie.waypoints.waypoint.WaypointStore;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
+import org.jspecify.annotations.Nullable;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public final class ChatShareHandler {
+	private static final int MAX_PENDING = 100;
+
+	private static final Map<Integer, XaeroShareFormat.Shared> PENDING = new LinkedHashMap<>() {
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<Integer, XaeroShareFormat.Shared> eldest) {
+			return this.size() > MAX_PENDING;
+		}
+	};
+	private static int nextId;
+	private static final boolean DEFER_TO_XAERO = Platform.get().isModLoaded("xaerominimap");
+
+	private ChatShareHandler() {
+	}
+
+	/** Called by the loaders for every chat and game message, false hides the message. */
+	public static boolean handle(Component message, @Nullable String sender) {
+		if (!WaypointsConfig.DETECT_SHARED.get() || DEFER_TO_XAERO) {
+			return true;
+		}
+		String text = message.getString();
+		XaeroShareFormat.Shared shared = XaeroShareFormat.find(text);
+		if (shared == null) {
+			return true;
+		}
+
+		int id = nextId++;
+		PENDING.put(id, shared);
+		Component name;
+		if (sender != null) {
+			name = Component.literal(sender);
+		} else {
+			int open = text.indexOf('<');
+			int close = open < 0 ? -1 : text.indexOf('>', open);
+			name = close > open + 1 ? Component.literal(text.substring(open + 1, close)) : Component.translatable("avies-waypoints.chat.server");
+		}
+		Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(sharedMessage(name, shared, id));
+		return false;
+	}
+
+	private static Component sharedMessage(Component sender, XaeroShareFormat.Shared shared, int id) {
+		Waypoint waypoint = shared.waypoint();
+		MutableComponent line = shared.dimension() != null
+			? Component.translatable("avies-waypoints.chat.shared_dimension", sender, waypoint.name, dimensionPath(shared.dimension()))
+			: Component.translatable("avies-waypoints.chat.shared", sender, waypoint.name);
+		line.append(Component.translatable("avies-waypoints.chat.add").withStyle(ChatFormatting.DARK_GREEN, ChatFormatting.UNDERLINE));
+		return line.withStyle(style -> style.applyFormat(ChatFormatting.GRAY)
+			.withClickEvent(new ClickEvent.RunCommand("/avieswaypoints add_shared " + id))
+			.withHoverEvent(new HoverEvent.ShowText(Component.literal(coordinates(waypoint)))));
+	}
+
+	private static String dimensionPath(String dimension) {
+		return dimension.substring(dimension.indexOf(':') + 1);
+	}
+
+	public static Component waypointName(Waypoint waypoint, @Nullable String dimension) {
+		MutableComponent hover = Component.literal(coordinates(waypoint));
+		if (dimension != null) {
+			hover.append("\n").append(Component.literal(dimension).withStyle(ChatFormatting.GRAY));
+		}
+		int color = waypoint.color == 0 ? 0x555555 : WaypointColor.rgb(waypoint.color);
+		return Component.literal("[" + waypoint.name + "]")
+			.withStyle(style -> style.withColor(TextColor.fromRgb(color)).withHoverEvent(new HoverEvent.ShowText(hover)));
+	}
+
+	public static String coordinates(Waypoint waypoint) {
+		return waypoint.x + ", " + (waypoint.yIncluded ? waypoint.y : "~") + ", " + waypoint.z;
+	}
+
+	public static void addShared(int id) {
+		Minecraft minecraft = Minecraft.getInstance();
+		XaeroShareFormat.Shared shared = PENDING.get(id);
+		String dimension = shared == null ? null : shared.dimension() != null ? shared.dimension() : WaypointStore.currentDimension();
+		if (shared == null || dimension == null) {
+			minecraft.gui.hud.getChat().addClientSystemMessage(Component.translatable("avies-waypoints.chat.expired").withStyle(ChatFormatting.RED));
+			return;
+		}
+
+		Waypoint waypoint = shared.waypoint();
+		boolean exists = WaypointStore.get(dimension).stream().anyMatch(other ->
+			other.x == waypoint.x && other.y == waypoint.y && other.z == waypoint.z && other.name.equals(waypoint.name));
+		if (exists) {
+			minecraft.gui.hud.getChat().addClientSystemMessage(Component.translatable("avies-waypoints.chat.exists", waypointName(waypoint, dimension))
+				.withStyle(ChatFormatting.GRAY));
+			return;
+		}
+
+		Waypoint copy = new Waypoint(waypoint.name, waypoint.initials, waypoint.x, waypoint.y, waypoint.z, waypoint.color);
+		copy.yIncluded = waypoint.yIncluded;
+		copy.rotateOnTp = waypoint.rotateOnTp;
+		copy.yaw = waypoint.yaw;
+		WaypointStore.add(dimension, copy);
+		minecraft.gui.hud.getChat().addClientSystemMessage(Component.translatable("avies-waypoints.chat.added", waypointName(copy, dimension))
+			.withStyle(ChatFormatting.GRAY));
+	}
+
+	public static void share(Waypoint waypoint, String dimension) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft.player != null) {
+			minecraft.player.connection.sendChat(XaeroShareFormat.format(waypoint, dimension));
+		}
+	}
+}

@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "avies-waypoints",
+	"version": "${version}",
+	"name": "Avies Waypoints",
+	"description": "Set waypoints in your world and find your way back to them.",
+	"authors": [
+		"Avie29"
+	],
+	"contact": {
+		"homepage": "https://avie.cc/",
+		"sources": "https://github.com/avie293/avies-waypoints",
+		"issues": "https://github.com/avie293/avie-issues/issues"
+	},
+	"license": "Avie Terms & Conditions 1.0",
+	"icon": "assets/avies-waypoints/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"cc.avie.waypoints.fabric.AviesWaypointsFabric"
+		]
+	},
+	"mixins": [
+		"avies-waypoints.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*",
+		"tabbylib": ">=${tabbylib_version}"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"avie29.discord": "https://discord.gg/57TZ8BJvd9"
+			}
+		}
+	}
+}
