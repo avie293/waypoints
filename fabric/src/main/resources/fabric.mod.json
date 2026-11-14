@@ -3,7 +3,7 @@
 	"id": "avies-waypoints",
 	"version": "${version}",
 	"name": "Avies Waypoints",
-	"description": "Set waypoints in your world and find your way back to them.",
+	"description": "${mod_description}",
 	"authors": [
 		"${mod_author}"
 	],

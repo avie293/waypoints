@@ -1,6 +1,6 @@
 # Avies Waypoints
 
-Set waypoints in your world and find your way back to them.
+Simple waypoints shown in the world, shareable in chat.
 
 Avies Waypoints shows your waypoints in the world with their distance and lets you share them with other players in chat. It is **client-side only** and works on any server **without the server needing the mod**. Features include:
 
