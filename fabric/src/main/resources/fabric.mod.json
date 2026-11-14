@@ -5,14 +5,14 @@
 	"name": "Avies Waypoints",
 	"description": "Set waypoints in your world and find your way back to them.",
 	"authors": [
-		"Avie29"
+		"${mod_author}"
 	],
 	"contact": {
-		"homepage": "https://avie.cc/",
-		"sources": "https://github.com/avie293/avies-waypoints",
-		"issues": "https://github.com/avie293/avie-issues/issues"
+		"homepage": "${mod_homepage}",
+		"sources": "${mod_sources}",
+		"issues": "${mod_issues}"
 	},
-	"license": "Avie Terms & Conditions 1.0",
+	"license": "${mod_license}",
 	"icon": "assets/avies-waypoints/icon.png",
 	"environment": "client",
 	"entrypoints": {
@@ -33,7 +33,7 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"avie29.discord": "https://discord.gg/57TZ8BJvd9"
+				"avie.discord": "https://discord.gg/57TZ8BJvd9"
 			}
 		}
 	}
