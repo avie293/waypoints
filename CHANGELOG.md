@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.0.0 - 2026-11-14
+
 |         | Fabric | NeoForge |
 |---------|--------|----------|
 | 26.3    | Yes    | Yes      |
@@ -14,4 +16,3 @@
 - Added death waypoints, with older deaths kept as "Old Death #N"
 - Added optional player heads and waypoints on the locator bar
 - Added settings for distance and name display, size, opacity and maximum distance
-- Added NeoForge support
