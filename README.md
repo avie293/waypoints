@@ -14,4 +14,6 @@ Avies Waypoints shows your waypoints in the world with their distance and lets y
 
 Press **B** to create a waypoint and **U** to open the waypoint list. Both keys can be changed, and keys for the settings and for hiding all waypoints can be assigned.
 
+Pre 2.0.0 versions: [Avies Archive](https://avie.cc/archive/)
+
 Bugs and crashes can be reported in the [issue tracker](https://github.com/avie293/avie-issues/issues) by selecting **Avies Waypoints** as the project.
