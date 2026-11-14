@@ -24,7 +24,7 @@
 		"avies-waypoints.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.19.5",
+		"fabricloader": ">=${loader_version}",
 		"minecraft": "~26.3",
 		"java": ">=25",
 		"fabric-api": "*",
